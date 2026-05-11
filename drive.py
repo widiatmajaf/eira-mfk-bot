@@ -17,7 +17,7 @@ FOLDER_MAP = {
 
 
 def _get_service():
-    creds_dict = json.loads(base64.b64decode(GOOGLE_CREDENTIALS))
+    creds_dict = json.loads(base64.b64decode(GOOGLE_CREDENTIALS.strip()))
     creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     return build("drive", "v3", credentials=creds, cache_discovery=False)
 
