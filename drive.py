@@ -40,11 +40,22 @@ def _upload_sync(file_bytes: bytes, filename: str, folder_id: str) -> str:
 async def upload_photo(file_bytes: bytes, filename: str, folder_key: str) -> str | None:
     """Upload photo to Google Drive. Returns shareable link or None."""
     folder_id = FOLDER_MAP.get(folder_key, "")
-    if not folder_id or not GOOGLE_CREDENTIALS:
+    print(f"[DRIVE] Attempting upload: {filename} to {folder_key} ({folder_id})")
+
+    if not folder_id:
+        print(f"[DRIVE] Error: Folder ID for {folder_key} is empty!")
         return None
+    if not GOOGLE_CREDENTIALS:
+        print("[DRIVE] Error: GOOGLE_CREDENTIALS is empty!")
+        return None
+
     loop = asyncio.get_event_loop()
     try:
-        return await loop.run_in_executor(None, _upload_sync, file_bytes, filename, folder_id)
+        url = await loop.run_in_executor(None, _upload_sync, file_bytes, filename, folder_id)
+        print(f"[DRIVE] Success: {url}")
+        return url
     except Exception as e:
-        print(f"Drive upload error: {e}")
+        import traceback
+        print(f"[DRIVE] Upload Exception: {e}")
+        traceback.print_exc()
         return None
